@@ -38,21 +38,90 @@ function createGameboard() {
 };
 
 function createPlayer(symbol) {
+  let name;
   function requestMove(x, y) {
     return {x, y, symbol}
   }
-
-  return {
-    requestMove
+  function refreshName() {
+    name = document.getElementById(`player${symbol}Name`).value;
   }
 
+  function getName() {
+    return name;
+  }
+
+  return {
+    requestMove,
+    getName,
+    refreshName
+  }
+}
+
+function createPlayerX() {
+  return createPlayer('X');
+}
+
+function createPlayerO() {
+  return createPlayer('O');
+}
+
+function createRenderer() {
+  function clear() {
+      const cells = document.getElementsByClassName("cell");
+      for (const cell of cells) {
+        cell.textContent = "";
+      }   
+  }
+
+  function renderBoardState(boardState) {
+      clear();
+      const cells = document.getElementsByClassName("cell");
+      let cell_counter = 0;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (boardState[i][j] !== null) {
+            const cell = cells[cell_counter];
+            cell.textContent = boardState[i][j];
+          }
+          cell_counter++;
+        }
+      }
+
+  }
+  return {
+    renderBoardState,
+  }
+  
 }
 
 let Game = (function () {
-  const playerX = createPlayer('X');
-  const playerO = createPlayer('O');
+  let playerX = createPlayerX();
+  let playerO = createPlayerO();
   const gameboard = createGameboard();
+  const renderer = createRenderer();
   let currentTurnX = true;
+
+  function setupEventHandlers() {
+    const cells = document.getElementsByClassName("cell");
+    let i = 0;
+    let j = 0;
+      const createHandleTurn = function (x, y) {
+        function callHandleTurn() {
+          handleTurn(x, y);
+        }
+        return callHandleTurn;
+      }
+    for (const cell of cells) {      
+      cell.addEventListener("click", createHandleTurn(i, j));
+      j++;
+      if (j % 3 === 0) {
+        i++;
+        j = 0;
+      }
+    }
+    const startButton = document.getElementById("startButton");
+    startButton.addEventListener("click", Game.start);
+  }
 
   function handleTurn(x, y) {
     let move;
@@ -64,11 +133,18 @@ let Game = (function () {
     }
     const moveResult = gameboard.playMove(move);
     if (moveResult) {
+      renderer.renderBoardState(gameboard.getBoardState());
       const gameResult = determineWinner(gameboard.getBoardState()); 
-        if (gameResult !== null) {
-          return gameResult;
+      if (gameResult) {
+        const cells = document.getElementsByClassName("cell");
+        for (const cell of cells) {
+          /* Removes all event handlers */
+          cell.outerHTML = cell.outerHTML;
         }
-      currentTurnX = !currentTurnX;
+      }
+      else {
+        currentTurnX = !currentTurnX;
+      }
     }
     return null;
   }  
@@ -100,44 +176,36 @@ let Game = (function () {
     results.push(calculateRowCol([boardState[0][0], boardState[1][1], boardState[2][2]]));
     results.push(calculateRowCol([boardState[0][2], boardState[1][1], boardState[2][0]]));
     const winner = results.filter((f) => f !== "tie" && f !==  null);
-    console.log("The results for this turn are: ",results);
     if (winner.length > 0) {
-      return winner[0];
+      const winnerName = winner[0] === 'X' ? playerX.getName() : playerO.getName();
+
+      console.log(`Player ${winnerName} wins!`);
+      return true; //game over
     }
     const numTies = results.filter((f) => f === "tie").length;
     if (numTies === 8) {
-      return "tie";
+        console.log("It's a tie!");
+        return true;
     }
-    return null;
+    return false;
   }
-
-  function play() {
+  function start() {
     gameboard.clear();
-    currentTurnX = true;
-    while (true) {
-      const currentTurn =currentTurnX ? "X" : "O";
-      gameboard.showGameState();
-      const input = prompt(`It's currently player ${currentTurn}'s turn. Hint: <x, y>`);
-      const move = input.split(',').map((m) => parseInt(m));
-      const result = handleTurn(...move); 
-      if (result !== null) {
-        if (result === "tie") {
-          console.log("It's a tie!");
-        }
-        else {
-          console.log(`Player ${result} wins!`);
-        }
-        break;
-      }
-    }
-    
+    playerX.refreshName();
+    playerO.refreshName();
+    setupEventHandlers();
+    renderer.renderBoardState(gameboard.getBoardState());
+    currentTurnX = true;    
   }
 
   return  {
-    play,
+    start,
     determineWinner,
     calculateRowCol,
+
   }
 })();
 
+
 window.Game = Game;
+Game.start();
