@@ -25,6 +25,10 @@
 
 }
 
+* {
+  user-select: none;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -46,6 +50,9 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  margin: 15px;
+  padding: 0;
+  color: var(--purple-700);
 }
 
 #app {
@@ -53,22 +60,24 @@ h1 {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
 }
 
 #game {
   display: grid;
-  grid-template-rows: repeat(3, 200px);
-  grid-template-columns: repeat(3, 200px);
+  grid-template-rows: repeat(3, 20vh);
+  grid-template-columns: repeat(3, 20vh);
+  align-self: center;
 }
 
 
 .cell {
   border: 1px solid var(--purple-950);
-  font-size: 120px;
+  font-size: 10vh;
   align-content: center;
   text-align: center;
-  user-select: none;
 }
 
 .cell.top {
@@ -113,16 +122,40 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
+  border-radius: 14px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  margin: 20px;
+  margin: 5px;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--purple-700);
   cursor: pointer;
   transition: border-color 0.25s;
+  align-self: center;
+}
+
+.names {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 60px;
+
+}
+
+input {
+  background-color: var(--purple-200);
+  color: var(--purple-950);
+  font-size: 18px;
+  width: 11.2vw;
+  flex: 0;
+  border-radius: 14px;
+  padding: 5px 10px;
+}
+
+:focus {
+  outline: solid 1px var(--purple-600);
 }
 
 button:hover {
@@ -139,19 +172,4 @@ div.names {
   flex-direction: row;
   justify-content: space-around;
   margin: 20px;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
 }

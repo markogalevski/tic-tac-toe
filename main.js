@@ -44,6 +44,9 @@ function createPlayer(symbol) {
   }
   function refreshName() {
     name = document.getElementById(`player${symbol}Name`).value;
+    if (name.length == 0) {
+      name = document.getElementById(`player${symbol}Name`).placeholder;
+    }
   }
 
   function getName() {
@@ -95,6 +98,7 @@ function createRenderer() {
 }
 
 const Game = (() => {
+  const title = document.getElementById("title");
   const playerX = createPlayerX();
   const playerO = createPlayerO();
   const gameboard = createGameboard();
@@ -176,18 +180,18 @@ const Game = (() => {
     const winner = results.filter((f) => f !== "tie" && f !==  null);
     if (winner.length > 0) {
       const winnerName = winner[0] === 'X' ? playerX.getName() : playerO.getName();
-
-      console.log(`Player ${winnerName} wins!`);
+      title.textContent = `${winnerName.toUpperCase()} WINS!`;
       return true; //game over
     }
     const numTies = results.filter((f) => f === "tie").length;
     if (numTies === 8) {
-        console.log("It's a tie!");
+        title.textContent = "IT'S A TIE!";
         return true;
     }
     return false;
   }
   function start() {
+    title.textContent = "TIC-TAC-TOE";
     gameboard.clear();
     playerX.refreshName();
     playerO.refreshName();
