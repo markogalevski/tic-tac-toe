@@ -94,9 +94,9 @@ function createRenderer() {
   
 }
 
-let Game = (function () {
-  let playerX = createPlayerX();
-  let playerO = createPlayerO();
+const Game = (() => {
+  const playerX = createPlayerX();
+  const playerO = createPlayerO();
   const gameboard = createGameboard();
   const renderer = createRenderer();
   let currentTurnX = true;
@@ -105,7 +105,7 @@ let Game = (function () {
     const cells = document.getElementsByClassName("cell");
     let i = 0;
     let j = 0;
-      const createHandleTurn = function (x, y) {
+      const createHandleTurn = (x, y) => {
         function callHandleTurn() {
           handleTurn(x, y);
         }
@@ -138,7 +138,7 @@ let Game = (function () {
       if (gameResult) {
         const cells = document.getElementsByClassName("cell");
         for (const cell of cells) {
-          /* Removes all event handlers */
+          //biome-ignore lint/correctness/noSelfAssign:  Removes all event handlers
           cell.outerHTML = cell.outerHTML;
         }
       }
@@ -160,15 +160,13 @@ let Game = (function () {
         if (filtered.every((f) => f === "X") || filtered.every((f) => f === "O")) {
           return filtered[0];
         }
-        else {
-          return "tie";
-        }
+        return "tie";
       }
       return null;
     }
   
   function determineWinner(boardState) {
-    let results = [];
+    const results = [];
     for (let i = 0; i < 3; i++){ 
       results.push(calculateRowCol(boardState[i]));
       results.push(calculateRowCol([boardState[0][i], boardState[1][i], boardState[2][i]]));
